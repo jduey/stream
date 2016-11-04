@@ -1,0 +1,23 @@
+
+(deftype stream [carrier hd-fn tl-fn empty-fn]
+  Stringable
+  (string-list [_]
+    (comp (list "<Stream ")
+          (string-list carrier)
+          (list ">")))
+
+  Collection
+  (empty? [s]
+    (empty-fn carrier))
+
+  Container
+  (map [s f]
+    (stream (.carrier s)
+            (fn [s]
+              (map (hd-fn s) f))
+            tl-fn
+            empty-fn))
+  (extract [s]
+    (hd-fn carrier))
+  (extend [s f]
+    (stream s f rest empty?)))
